@@ -53,29 +53,30 @@ data: {"type":"done","content":"Hello world"}
 
 ## Comparison
 
-| Dimension | PaeanClaw | OpenClaw (ZeroClaw) | **0claw** |
-|-----------|-----------|---------------------|-----------|
-| Language | TypeScript | Rust | **Rust** |
-| Lines of Code | ~365 | ~20,000+ | **~500** |
-| Runtime | Node.js / Bun | Native binary | **Native binary** |
-| Binary Size | N/A (interpreted) | ~10MB+ | **~5MB (release)** |
-| Dependencies | 2 (npm) | 50+ crates | **10 crates** |
-| LLM Provider | OpenAI-compatible | Multi-provider (OpenAI, Anthropic, Gemini, Ollama, etc.) | **OpenAI-compatible** |
-| Tool System | MCP only | Built-in (50+) + MCP | **MCP only** |
-| Channels | HTTP + Telegram | HTTP + 20+ channels (Telegram, Discord, Slack, etc.) | **HTTP only** |
-| Storage | SQLite | SQLite + Vector memory | **SQLite** |
-| Streaming | SSE | SSE + WebSocket | **SSE** |
-| Config Format | JSON | TOML | **TOML** |
-| Frontend | PWA (built-in) | Site (GitHub Pages) | **None (API only)** |
-| Security | None | Pairing, E-stop, OTP, Sandbox | **None (local use)** |
-| Hardware | None | ESP32, GPIO, probe-rs | **None** |
-| Extension Model | Skills (Markdown) | Traits + Skills + Templates | **MCP servers** |
-| Target | Local AI assistant | Full autonomous agent platform | **Minimal core runtime** |
+| Dimension | PaeanClaw | [OpenClaw](https://github.com/openclaw/openclaw) | **0claw** |
+|-----------|-----------|-----------|-----------|
+| Language | TypeScript | TypeScript (85.9%) + Swift + Kotlin | **Rust** |
+| Codebase | ~365 lines | Large monorepo (Gateway + CLI + UI + native apps) | **~500 lines** |
+| Runtime | Node.js / Bun | Node.js ≥22 (pnpm / bun) | **Native binary** |
+| Binary Size | N/A (interpreted) | N/A (interpreted + native apps) | **~5MB (release)** |
+| Dependencies | 2 (npm) | Heavy (npm + native toolchains) | **10 crates** |
+| LLM Provider | OpenAI-compatible | Multi-provider with model failover (OpenAI, Anthropic, etc.) | **OpenAI-compatible** |
+| Tool System | MCP only | Built-in (browser, canvas, cron, nodes) + Skills | **MCP only** |
+| Channels | HTTP + Telegram | 22+ channels (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Teams, Matrix, IRC, etc.) | **HTTP only** |
+| Storage | SQLite | Sessions + workspace persistence | **SQLite** |
+| Streaming | SSE | WebSocket (Gateway control plane) + SSE | **SSE** |
+| Config Format | JSON | JSON (openclaw.json) | **TOML** |
+| Frontend | PWA (built-in) | Control UI + WebChat (Gateway-served) + Canvas/A2UI | **None (API only)** |
+| Native Apps | None | macOS menu bar + iOS + Android | **None** |
+| Voice | None | Voice Wake + Talk Mode (macOS/iOS/Android) | **None** |
+| Security | None | DM pairing, Docker sandbox, Tailscale, per-session isolation | **None (local use)** |
+| Extension Model | Skills (Markdown) | Skills platform (bundled/managed/workspace) + ClawHub | **MCP servers** |
+| Target | Local AI assistant | Full personal AI assistant platform | **Minimal core runtime** |
 
 ### Design Philosophy
 
 - **PaeanClaw**: Minimal local agent for personal use. Prioritizes simplicity and quick setup with Node.js/Bun.
-- **OpenClaw (ZeroClaw)**: Comprehensive agent platform. Trait-driven architecture with extensive channel, provider, and tool support.
+- **[OpenClaw](https://github.com/openclaw/openclaw)**: Comprehensive personal AI assistant. Gateway-centric architecture with 22+ messaging channels, native apps, voice, canvas, browser control, and Docker sandboxing. "Your own personal AI assistant. Any OS. Any Platform."
 - **0claw**: The absolute core distilled. Pure Rust, single binary, zero bloat. Only the essential: LLM streaming, MCP tools, and conversation persistence.
 
 ## Configuration
