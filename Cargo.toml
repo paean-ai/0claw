@@ -4,6 +4,11 @@ version = "0.1.0"
 edition = "2021"
 description = "The absolute core. A minimal Rust agent runtime."
 license = "MIT"
+repository = "https://github.com/paean-ai/0claw"
+homepage = "https://0.works"
+readme = "README.md"
+keywords = ["agent", "llm", "mcp", "ai", "cli"]
+categories = ["command-line-utilities"]
 
 [[bin]]
 name = "0claw"

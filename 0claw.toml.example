@@ -1,7 +1,7 @@
 [llm]
-base_url = "https://api.openai.com/v1"
-api_key = "${OPENAI_API_KEY}"
-model = "gpt-4o"
+base_url = "https://api.paean.ai/v1"
+api_key = "${PAEAN_API_KEY}"
+model = "GLM-4.5"
 
 # port = 3007
 

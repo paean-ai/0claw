@@ -4,13 +4,22 @@
 
 A minimal Rust agent runtime. ~500 lines. Zero overhead.
 
+## Install
+
+```bash
+# One-line install (macOS / Linux) — re-run to update
+curl -fsSL https://0.works/install.sh | bash
+
+# Or install via Cargo
+cargo install zeroclaw
+```
+
 ## Quick Start
 
 ```bash
-cargo build --release
 cp 0claw.toml.example 0claw.toml
 # Edit 0claw.toml with your LLM API key
-./target/release/0claw
+0claw
 ```
 
 ## Architecture
@@ -31,6 +40,16 @@ src/server.rs  — HTTP API (axum) + SSE
 | POST   | `/api/chat`          | Send message, returns SSE stream |
 | GET    | `/api/conversations` | List conversations             |
 | GET    | `/api/messages`      | Get messages by conversationId |
+
+### SSE Events
+
+```
+data: {"type":"start","conversation_id":"..."}
+data: {"type":"content","text":"Hello"}
+data: {"type":"tool_call","name":"fs__read_file","args":"..."}
+data: {"type":"tool_result","name":"fs__read_file","result":"..."}
+data: {"type":"done","content":"Hello world"}
+```
 
 ## Comparison
 
@@ -63,9 +82,9 @@ src/server.rs  — HTTP API (axum) + SSE
 
 ```toml
 [llm]
-base_url = "https://api.openai.com/v1"
-api_key = "${OPENAI_API_KEY}"
-model = "gpt-4o"
+base_url = "https://api.paean.ai/v1"
+api_key = "${PAEAN_API_KEY}"
+model = "GLM-4.5"
 
 port = 3007
 
