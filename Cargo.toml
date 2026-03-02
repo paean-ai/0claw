@@ -1,0 +1,28 @@
+[package]
+name = "zeroclaw"
+version = "0.1.0"
+edition = "2021"
+description = "The absolute core. A minimal Rust agent runtime."
+license = "MIT"
+
+[[bin]]
+name = "0claw"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "process", "sync"] }
+axum = "0.7"
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.32", features = ["bundled"] }
+toml = "0.8"
+uuid = { version = "1", features = ["v4"] }
+tokio-stream = "0.1"
+anyhow = "1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+codegen-units = 1
