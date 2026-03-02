@@ -47,7 +47,9 @@ async fn chat(
         .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
     let title: String = req.message.chars().take(50).collect();
     let _ = state.store.create_conversation(&conv_id, &title);
-    let _ = state.store.add_message(&conv_id, "user", &req.message, None);
+    let _ = state
+        .store
+        .add_message(&conv_id, "user", &req.message, None);
 
     let (tx, rx) = mpsc::channel(64);
     let llm = state.config.llm.clone();
@@ -89,9 +91,10 @@ async fn chat(
         }
     });
 
-    Sse::new(ReceiverStream::new(rx).map(|e| {
-        Ok(Event::default().data(serde_json::to_string(&e).unwrap_or_default()))
-    }))
+    Sse::new(
+        ReceiverStream::new(rx)
+            .map(|e| Ok(Event::default().data(serde_json::to_string(&e).unwrap_or_default()))),
+    )
 }
 
 async fn conversations(State(state): State<Arc<AppState>>) -> Json<Value> {
@@ -105,5 +108,8 @@ struct MsgQuery {
 }
 
 async fn messages(State(state): State<Arc<AppState>>, Query(q): Query<MsgQuery>) -> Json<Value> {
-    Json(json!(state.store.get_messages(&q.conversation_id).unwrap_or_default()))
+    Json(json!(state
+        .store
+        .get_messages(&q.conversation_id)
+        .unwrap_or_default()))
 }

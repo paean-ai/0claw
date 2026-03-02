@@ -67,7 +67,11 @@ pub async fn run(
         {
             Ok(r) => r,
             Err(e) => {
-                let _ = tx.send(AgentEvent::Error { error: e.to_string() }).await;
+                let _ = tx
+                    .send(AgentEvent::Error {
+                        error: e.to_string(),
+                    })
+                    .await;
                 return;
             }
         };
@@ -88,50 +92,45 @@ pub async fn run(
         let mut tc_buf: HashMap<usize, (String, String, String)> = HashMap::new();
         let mut buf = String::new();
 
-        loop {
-            match resp.chunk().await {
-                Ok(Some(chunk)) => {
-                    buf.push_str(&String::from_utf8_lossy(&chunk));
-                    while let Some(pos) = buf.find('\n') {
-                        let line = buf[..pos].trim().to_string();
-                        buf = buf[pos + 1..].to_string();
-                        let Some(data) = line.strip_prefix("data: ") else {
-                            continue;
-                        };
-                        if data == "[DONE]" {
-                            continue;
-                        }
-                        let Ok(v) = serde_json::from_str::<Value>(data) else {
-                            continue;
-                        };
-                        let delta = &v["choices"][0]["delta"];
-                        if let Some(c) = delta["content"].as_str() {
-                            turn_content.push_str(c);
-                            let _ = tx.send(AgentEvent::Content { text: c.into() }).await;
-                        }
-                        if let Some(tcs) = delta["tool_calls"].as_array() {
-                            for tc in tcs {
-                                let idx = tc["index"].as_u64().unwrap_or(0) as usize;
-                                let e = tc_buf.entry(idx).or_insert_with(|| {
-                                    (
-                                        tc["id"].as_str().unwrap_or("").into(),
-                                        tc["function"]["name"].as_str().unwrap_or("").into(),
-                                        String::new(),
-                                    )
-                                });
-                                if let Some(n) = tc["function"]["name"].as_str() {
-                                    if !n.is_empty() {
-                                        e.1 = n.into();
-                                    }
-                                }
-                                if let Some(a) = tc["function"]["arguments"].as_str() {
-                                    e.2.push_str(a);
-                                }
+        while let Ok(Some(chunk)) = resp.chunk().await {
+            buf.push_str(&String::from_utf8_lossy(&chunk));
+            while let Some(pos) = buf.find('\n') {
+                let line = buf[..pos].trim().to_string();
+                buf = buf[pos + 1..].to_string();
+                let Some(data) = line.strip_prefix("data: ") else {
+                    continue;
+                };
+                if data == "[DONE]" {
+                    continue;
+                }
+                let Ok(v) = serde_json::from_str::<Value>(data) else {
+                    continue;
+                };
+                let delta = &v["choices"][0]["delta"];
+                if let Some(c) = delta["content"].as_str() {
+                    turn_content.push_str(c);
+                    let _ = tx.send(AgentEvent::Content { text: c.into() }).await;
+                }
+                if let Some(tcs) = delta["tool_calls"].as_array() {
+                    for tc in tcs {
+                        let idx = tc["index"].as_u64().unwrap_or(0) as usize;
+                        let e = tc_buf.entry(idx).or_insert_with(|| {
+                            (
+                                tc["id"].as_str().unwrap_or("").into(),
+                                tc["function"]["name"].as_str().unwrap_or("").into(),
+                                String::new(),
+                            )
+                        });
+                        if let Some(n) = tc["function"]["name"].as_str() {
+                            if !n.is_empty() {
+                                e.1 = n.into();
                             }
+                        }
+                        if let Some(a) = tc["function"]["arguments"].as_str() {
+                            e.2.push_str(a);
                         }
                     }
                 }
-                _ => break,
             }
         }
 
@@ -189,5 +188,9 @@ pub async fn run(
         }
     }
 
-    let _ = tx.send(AgentEvent::Done { content: full_content }).await;
+    let _ = tx
+        .send(AgentEvent::Done {
+            content: full_content,
+        })
+        .await;
 }

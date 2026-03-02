@@ -54,8 +54,8 @@ impl Store {
 
     pub fn list_conversations(&self) -> Result<Vec<Conversation>> {
         let conn = self.0.lock().unwrap();
-        let mut stmt =
-            conn.prepare("SELECT id, title, created_at FROM conversations ORDER BY created_at DESC")?;
+        let mut stmt = conn
+            .prepare("SELECT id, title, created_at FROM conversations ORDER BY created_at DESC")?;
         let rows = stmt
             .query_map([], |r| {
                 Ok(Conversation {
