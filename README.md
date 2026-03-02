@@ -11,7 +11,7 @@ A minimal Rust agent runtime. ~500 lines. Zero overhead.
 curl -fsSL https://0.works/install.sh | bash
 
 # Or install via Cargo
-cargo install zeroclaw
+cargo install zero-claw
 ```
 
 ## Quick Start

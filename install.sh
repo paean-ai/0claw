@@ -72,7 +72,7 @@ if [ ! -f "$TMP/0claw.tar.gz" ] || [ "$HTTP_CODE" != "200" ]; then
   echo "  Falling back to cargo install..."
   echo ""
   if command -v cargo >/dev/null 2>&1; then
-    cargo install zeroclaw
+    cargo install zero-claw
     echo ""
     echo "  Installed via cargo. Run: 0claw"
     exit 0
