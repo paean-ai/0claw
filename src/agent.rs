@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use tokio::sync::mpsc;
 
 #[derive(Clone, serde::Serialize)]
-#[serde(tag = "type")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum AgentEvent {
     #[serde(rename = "start")]
     Start { conversation_id: String },

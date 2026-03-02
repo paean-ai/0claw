@@ -31,6 +31,7 @@ pub fn router(state: Arc<AppState>) -> Router {
 }
 
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct ChatReq {
     message: String,
     #[serde(default)]

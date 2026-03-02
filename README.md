@@ -81,12 +81,13 @@ data: {"type":"done","content":"Hello world"}
 ## Configuration
 
 ```toml
+# Top-level settings must come before table sections
+port = 3007
+
 [llm]
 base_url = "https://api.paean.ai/v1"
 api_key = "${PAEAN_API_KEY}"
 model = "GLM-4.5"
-
-port = 3007
 
 [mcp_servers.filesystem]
 command = "npx"
