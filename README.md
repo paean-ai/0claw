@@ -25,12 +25,13 @@ cp 0claw.toml.example 0claw.toml
 ## Architecture
 
 ```
-src/main.rs    — entry point
-src/config.rs  — TOML config + env interpolation
-src/agent.rs   — LLM streaming + tool-calling loop
-src/mcp.rs     — MCP stdio client
-src/store.rs   — SQLite persistence
-src/server.rs  — HTTP API (axum) + SSE
+src/main.rs      — entry point
+src/config.rs    — TOML config + env interpolation
+src/agent.rs     — LLM streaming + tool-calling loop
+src/mcp.rs       — MCP stdio client
+src/store.rs     — SQLite persistence
+src/server.rs    — HTTP API (axum) + SSE
+src/telegram.rs  — Telegram bot (long-polling)
 ```
 
 ## API
@@ -62,7 +63,7 @@ data: {"type":"done","content":"Hello world"}
 | Dependencies | 2 (npm) | Heavy (npm + native toolchains) | **10 crates** |
 | LLM Provider | OpenAI-compatible | Multi-provider with model failover (OpenAI, Anthropic, etc.) | **OpenAI-compatible** |
 | Tool System | MCP only | Built-in (browser, canvas, cron, nodes) + Skills | **MCP only** |
-| Channels | HTTP + Telegram | 22+ channels (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Teams, Matrix, IRC, etc.) | **HTTP only** |
+| Channels | HTTP + Telegram | 22+ channels (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Teams, Matrix, IRC, etc.) | **HTTP + Telegram** |
 | Storage | SQLite | Sessions + workspace persistence | **SQLite** |
 | Streaming | SSE | WebSocket (Gateway control plane) + SSE | **SSE** |
 | Config Format | JSON | JSON (openclaw.json) | **TOML** |
@@ -93,6 +94,10 @@ model = "GLM-4.5"
 [mcp_servers.filesystem]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-filesystem", "."]
+
+[telegram]
+token = "${TELEGRAM_BOT_TOKEN}"
+allowed_users = []  # user IDs or usernames; empty = allow all
 ```
 
 Environment variables are interpolated via `${VAR}` syntax. Set `ZEROCLAW_CONFIG` to override the default config path (`0claw.toml`).
@@ -103,6 +108,7 @@ Environment variables are interpolated via `${VAR}` syntax. Set `ZEROCLAW_CONFIG
 - Any OpenAI-compatible LLM
 - MCP tool integration (JSON-RPC 2.0 over stdio)
 - SSE streaming responses
+- Telegram bot with optional user access control
 - SQLite conversation persistence
 - TOML config with env interpolation
 - Release-optimized: `opt-level=z`, LTO, strip

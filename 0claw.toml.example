@@ -8,3 +8,7 @@ model = "GLM-4.5"
 # [mcp_servers.filesystem]
 # command = "npx"
 # args = ["-y", "@modelcontextprotocol/server-filesystem", "."]
+
+# [telegram]
+# token = "${TELEGRAM_BOT_TOKEN}"
+# allowed_users = []

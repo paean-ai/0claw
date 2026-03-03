@@ -3,6 +3,7 @@ mod config;
 mod mcp;
 mod server;
 mod store;
+mod telegram;
 
 use std::sync::Arc;
 
@@ -22,12 +23,24 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or_else(|_| "You are a helpful assistant.".into());
 
     let port = config.port;
+    let tg_config = config.telegram.clone();
+    let tg_llm = config.llm.clone();
+    let tg_prompt = system_prompt.clone();
+    let tg_store = store.clone();
+    let tg_mcp = mcp.clone();
+
     let state = Arc::new(server::AppState {
         config,
         store,
         mcp,
         system_prompt,
     });
+
+    if let Some(tg) = tg_config {
+        tokio::spawn(async move {
+            telegram::start(tg, tg_llm, tg_prompt, tg_store, tg_mcp).await;
+        });
+    }
 
     eprintln!("[0claw] http://localhost:{port}");
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await?;

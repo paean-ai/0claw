@@ -8,6 +8,14 @@ pub struct Config {
     pub mcp_servers: HashMap<String, McpServer>,
     #[serde(default = "default_port")]
     pub port: u16,
+    pub telegram: Option<TelegramConfig>,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct TelegramConfig {
+    pub token: String,
+    #[serde(default)]
+    pub allowed_users: Vec<String>,
 }
 
 #[derive(Deserialize, Clone)]
