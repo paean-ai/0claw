@@ -18,3 +18,9 @@ model = "GLM-4.5"
 # base_url = "https://ilinkai.weixin.qq.com"
 # account_id = "your-account-id"
 # allowed_users = []
+#
+# To get your WeChat token and account_id:
+#   1. Use `npx paeanclaw wechat-setup` or `npx claude-code-wechat setup`
+#      to complete QR login and obtain credentials
+#   2. Copy the token and account_id into this config
+#   3. Start 0claw — the WeChat channel activates automatically

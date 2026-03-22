@@ -36,6 +36,9 @@ async fn main() -> anyhow::Result<()> {
     let wc_store = store.clone();
     let wc_mcp = mcp.clone();
 
+    let has_telegram = tg_config.is_some();
+    let has_wechat = wc_config.is_some();
+
     let state = Arc::new(server::AppState {
         config,
         store,
@@ -56,6 +59,8 @@ async fn main() -> anyhow::Result<()> {
     }
 
     eprintln!("[0claw] http://localhost:{port}");
+    if has_telegram { eprintln!("[0claw] Telegram channel: active"); }
+    if has_wechat { eprintln!("[0claw] WeChat channel: active"); }
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await?;
     axum::serve(listener, server::router(state)).await?;
     Ok(())
