@@ -177,7 +177,7 @@ pub async fn start(wc: WechatConfig, llm: LlmConfig, system_prompt: String, stor
     let mut consecutive_failures: u32 = 0;
     let mut ctx_cache: HashMap<String, String> = HashMap::new();
 
-    eprintln!("[0claw] WeChat channel starting (account: {})", wc.account_id);
+    eprintln!("[0claw] 💬 WeChat channel connected (account: {})", wc.account_id);
 
     loop {
         match get_updates(&client, &wc.base_url, &wc.token, &update_buf).await {
@@ -222,9 +222,12 @@ pub async fn start(wc: WechatConfig, llm: LlmConfig, system_prompt: String, stor
                         ctx_cache.insert(sender_id.to_string(), ct.clone());
                     }
 
+                    let sender_name = sender_id.split('@').next().unwrap_or(sender_id);
+                    let preview: String = if text.len() > 80 { format!("{}...", &text[..80]) } else { text.clone() };
+                    eprintln!("[0claw] 💬 ← {sender_name}: {preview}");
+
                     let conv_id = format!("wechat-{sender_id}");
-                    let name = sender_id.split('@').next().unwrap_or(sender_id);
-                    let title = format!("WeChat: {name}");
+                    let title = format!("WeChat: {sender_name}");
                     let _ = store.create_conversation(&conv_id, &title);
                     let _ = store.add_message(&conv_id, "user", &text, None);
 
@@ -250,13 +253,25 @@ pub async fn start(wc: WechatConfig, llm: LlmConfig, system_prompt: String, stor
                     let mut response = String::new();
                     while let Some(event) = rx.recv().await {
                         match event {
-                            AgentEvent::Content { text } => response.push_str(&text),
+                            AgentEvent::Content { text: t } => response.push_str(&t),
+                            AgentEvent::ToolCall { name: ref n, .. } => {
+                                eprintln!("[0claw]   🔧 {n}...");
+                            }
+                            AgentEvent::ToolResult { name: ref n, .. } => {
+                                eprintln!("[0claw]   ✓ {n} done");
+                            }
                             AgentEvent::Done { content } => { if response.is_empty() { response = content; } }
-                            _ => {}
+                            AgentEvent::Error { error: ref e } => {
+                                eprintln!("[0claw]   ✗ Error: {e}");
+                            }
+                            AgentEvent::Start { .. } => {}
                         }
                     }
 
                     if !response.is_empty() {
+                        let resp_preview: String = if response.len() > 100 { format!("{}...", &response[..100]) } else { response.clone() };
+                        eprintln!("[0claw] 💬 → {sender_name}: {resp_preview}");
+
                         let _ = store.add_message(&conv_id, "assistant", &response, None);
                         if let Some(ctx) = ctx_cache.get(sender_id) {
                             for chunk in chunk_text(&response, 2048) {
@@ -264,6 +279,7 @@ pub async fn start(wc: WechatConfig, llm: LlmConfig, system_prompt: String, stor
                                     eprintln!("[0claw] WeChat send error: {e}");
                                 }
                             }
+                            eprintln!("[0claw] ✓ Reply sent to {sender_name}");
                         }
                     }
                 }
