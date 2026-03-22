@@ -12,3 +12,9 @@ model = "GLM-4.5"
 # [telegram]
 # token = "${TELEGRAM_BOT_TOKEN}"
 # allowed_users = []
+
+# [wechat]
+# token = "your-bot-token-from-qr-login"
+# base_url = "https://ilinkai.weixin.qq.com"
+# account_id = "your-account-id"
+# allowed_users = []

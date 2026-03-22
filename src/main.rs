@@ -4,6 +4,7 @@ mod mcp;
 mod server;
 mod store;
 mod telegram;
+mod wechat;
 
 use std::sync::Arc;
 
@@ -29,6 +30,12 @@ async fn main() -> anyhow::Result<()> {
     let tg_store = store.clone();
     let tg_mcp = mcp.clone();
 
+    let wc_config = config.wechat.clone();
+    let wc_llm = config.llm.clone();
+    let wc_prompt = system_prompt.clone();
+    let wc_store = store.clone();
+    let wc_mcp = mcp.clone();
+
     let state = Arc::new(server::AppState {
         config,
         store,
@@ -39,6 +46,12 @@ async fn main() -> anyhow::Result<()> {
     if let Some(tg) = tg_config {
         tokio::spawn(async move {
             telegram::start(tg, tg_llm, tg_prompt, tg_store, tg_mcp).await;
+        });
+    }
+
+    if let Some(wc) = wc_config {
+        tokio::spawn(async move {
+            wechat::start(wc, wc_llm, wc_prompt, wc_store, wc_mcp).await;
         });
     }
 

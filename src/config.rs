@@ -9,6 +9,7 @@ pub struct Config {
     #[serde(default = "default_port")]
     pub port: u16,
     pub telegram: Option<TelegramConfig>,
+    pub wechat: Option<crate::wechat::WechatConfig>,
 }
 
 #[derive(Deserialize, Clone)]
