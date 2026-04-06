@@ -24,6 +24,7 @@ rusqlite = { version = "0.32", features = ["bundled"] }
 toml = "0.8"
 uuid = { version = "1", features = ["v4"] }
 tokio-stream = "0.1"
+tokio-util = "0.7"
 anyhow = "1"
 base64 = "0.22"
 

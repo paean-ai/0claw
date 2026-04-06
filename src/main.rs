@@ -1,6 +1,8 @@
 mod agent;
 mod anthropic;
+mod cli;
 mod config;
+mod loop_sched;
 mod mcp;
 mod server;
 mod store;
@@ -23,6 +25,14 @@ async fn main() -> anyhow::Result<()> {
 
     let system_prompt = std::fs::read_to_string("AGENT.md")
         .unwrap_or_else(|_| "You are a helpful assistant.".into());
+
+    // Check for --cli flag
+    let is_cli = std::env::args().any(|a| a == "--cli" || a == "-i");
+
+    if is_cli {
+        cli::start(config.llm.clone(), system_prompt, store, mcp).await;
+        return Ok(());
+    }
 
     let port = config.port;
     let tg_config = config.telegram.clone();

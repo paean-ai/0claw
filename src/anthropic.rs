@@ -192,11 +192,7 @@ pub async fn run(
                 })
                 .await;
 
-            let args: Value = serde_json::from_str(input_str).unwrap_or(json!({}));
-            let result = mcp
-                .call_tool(name, args)
-                .await
-                .unwrap_or_else(|e| format!("Error: {e}"));
+            let result = crate::agent::call_tool(mcp, name, input_str).await;
 
             let _ = tx
                 .send(AgentEvent::ToolResult {

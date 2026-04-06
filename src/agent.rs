@@ -186,11 +186,7 @@ async fn run_openai(
                 })
                 .await;
 
-            let args: Value = serde_json::from_str(args_str).unwrap_or(json!({}));
-            let result = mcp
-                .call_tool(name, args)
-                .await
-                .unwrap_or_else(|e| format!("Error: {e}"));
+            let result = call_tool(mcp, name, args_str).await;
 
             let _ = tx
                 .send(AgentEvent::ToolResult {
@@ -208,4 +204,15 @@ async fn run_openai(
             content: full_content,
         })
         .await;
+}
+
+/// Route tool calls: built-in loop_* tools are handled locally, others via MCP.
+pub async fn call_tool(mcp: &McpManager, name: &str, args_str: &str) -> String {
+    if name.starts_with("loop_") {
+        return crate::loop_sched::handle_tool_call(name, args_str).await;
+    }
+    let args: Value = serde_json::from_str(args_str).unwrap_or(json!({}));
+    mcp.call_tool(name, args)
+        .await
+        .unwrap_or_else(|e| format!("Error: {e}"))
 }
