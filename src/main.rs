@@ -1,4 +1,5 @@
 mod agent;
+mod anthropic;
 mod config;
 mod mcp;
 mod server;

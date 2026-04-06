@@ -21,7 +21,22 @@ pub enum AgentEvent {
     Error { error: String },
 }
 
+/// Dispatch to the correct protocol handler based on config.protocol.
 pub async fn run(
+    config: &LlmConfig,
+    system: &str,
+    messages: &mut Vec<Value>,
+    tools: &[ToolSpec],
+    mcp: &McpManager,
+    tx: mpsc::Sender<AgentEvent>,
+) {
+    if config.protocol == "anthropic" {
+        return crate::anthropic::run(config, system, messages, tools, mcp, tx).await;
+    }
+    run_openai(config, system, messages, tools, mcp, tx).await;
+}
+
+async fn run_openai(
     config: &LlmConfig,
     system: &str,
     messages: &mut Vec<Value>,

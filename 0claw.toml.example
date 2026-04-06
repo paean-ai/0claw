@@ -1,9 +1,18 @@
 # port = 3007
 
+# --- OpenAI-compatible provider (default) ---
+# [llm]
+# base_url = "https://api.paean.ai/v1"
+# api_key = "${PAEAN_API_KEY}"
+# model = "GLM-4.5"
+# protocol = "openai"   # default, can be omitted
+
+# --- z.ai (BigModel) via Anthropic protocol ---
 [llm]
-base_url = "https://api.paean.ai/v1"
-api_key = "${PAEAN_API_KEY}"
-model = "GLM-4.5"
+base_url = "https://open.bigmodel.cn/api/anthropic"
+api_key = "${BIGMODEL_API_KEY}"
+model = "GLM-4.5-air"           # GLM-5.1, GLM-5, GLM-4.7, GLM-4.5-air
+protocol = "anthropic"
 
 # [mcp_servers.filesystem]
 # command = "npx"
